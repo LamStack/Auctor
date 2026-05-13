@@ -1,0 +1,11 @@
+{
+  "name": "auctor-web",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Investor-ready static web app prototype for Auctor.",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "check": "node -e \"require('fs').accessSync('index.html'); require('fs').accessSync('styles.css'); require('fs').accessSync('app.js'); console.log('Auctor static app files are present.')\""
+  }
+}
