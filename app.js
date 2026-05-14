@@ -153,11 +153,7 @@ function parseEmployeeText(text) {
 
 function scoreEmployee(employee, projectText) {
   const combinedEmployeeText = `${employee.skills} ${employee.notes}`.toLowerCase();
-  const projectWords = projectText
-    .toLowerCase()
-    .replace(/[^a-z0-9\s]/g, " ")
-    .split(/\s+/)
-    .filter((word) => word.length > 3);
+  const projectWords = extractKeywords(projectText);
   const uniqueWords = [...new Set(projectWords)];
   const matches = uniqueWords.filter((word) => combinedEmployeeText.includes(word));
   const strongSignals = ["fault", "pressure", "precision", "troubleshooting", "ambiguous", "handoff", "urgent", "sensor"];
@@ -169,8 +165,53 @@ function scoreEmployee(employee, projectText) {
   return {
     ...employee,
     score,
+    matches,
     reason: matches.slice(0, 4).join(", ") || "general skill overlap",
   };
+}
+
+function extractKeywords(text) {
+  return text
+    .toLowerCase()
+    .replace(/[^a-z0-9\s]/g, " ")
+    .split(/\s+/)
+    .filter((word) => word.length > 3);
+}
+
+function greedyRankEmployees(employees, projectText, limit = 4) {
+  const remainingNeeds = new Set(extractKeywords(projectText));
+  const availableEmployees = employees.map((employee) => scoreEmployee(employee, projectText));
+  const selectedEmployees = [];
+
+  while (availableEmployees.length && selectedEmployees.length < limit) {
+    let bestIndex = 0;
+    let bestValue = -Infinity;
+
+    availableEmployees.forEach((employee, index) => {
+      const uncoveredMatches = employee.matches.filter((match) => remainingNeeds.has(match));
+      const coverageValue = uncoveredMatches.length * 9;
+      const qualityValue = employee.score;
+      const value = qualityValue + coverageValue;
+
+      if (value > bestValue) {
+        bestValue = value;
+        bestIndex = index;
+      }
+    });
+
+    const [chosenEmployee] = availableEmployees.splice(bestIndex, 1);
+    const contribution = chosenEmployee.matches.filter((match) => remainingNeeds.has(match));
+
+    contribution.forEach((match) => remainingNeeds.delete(match));
+    selectedEmployees.push({
+      ...chosenEmployee,
+      contribution,
+      score: Math.min(98, chosenEmployee.score + contribution.length * 2),
+      remainingNeedCount: remainingNeeds.size,
+    });
+  }
+
+  return selectedEmployees;
 }
 
 function renderMatches() {
@@ -186,27 +227,21 @@ function renderMatches() {
     return;
   }
 
-  const rankedEmployees = employeeRows
-    .map((employee) => scoreEmployee(employee, notes))
-    .sort((a, b) => b.score - a.score)
-    .slice(0, 4);
+  const rankedEmployees = greedyRankEmployees(employeeRows, notes, 4);
 
   matchResults.innerHTML = rankedEmployees
     .map((employee, index) => {
-      const initials = employee.name
-        .split(" ")
-        .map((part) => part[0])
-        .join("")
-        .slice(0, 2)
-        .toUpperCase();
+      const contributionText = employee.contribution.length
+        ? employee.contribution.slice(0, 4).join(", ")
+        : employee.reason;
 
       return `
         <div class="employee-result">
           <div class="rank">${index + 1}</div>
           <div>
             <strong>${employee.name}</strong>
-            <span>${employee.role} · matched on ${employee.reason}</span>
-            <small>${index === 0 ? "Best fit for this project based on HRM skills and project notes." : "Alternative staffing option."}</small>
+            <span>${employee.role} · greedy contribution: ${contributionText}</span>
+            <small>${index === 0 ? "Selected first because this employee creates the highest immediate project fit." : "Selected next because this employee adds useful coverage after prior picks."}</small>
           </div>
           <b>${employee.score}%</b>
         </div>

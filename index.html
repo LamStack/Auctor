@@ -19,7 +19,14 @@
   <body>
     <header class="topbar">
       <a class="brand" href="#home" aria-label="Auctor home">
-        <img class="brand-logo" src="Auctorlogo-transparent.png" alt="Auctor logo" />
+        <span class="brand-logo-frame">
+          <img
+            class="brand-logo"
+            src="./Auctorlogo-transparent.png"
+            alt="Auctor logo"
+            onerror="this.onerror=null; this.src='./Auctorlogo.PNG';"
+          />
+        </span>
         <span>Auctor</span>
       </a>
       <nav class="desktop-nav" aria-label="Primary navigation">
@@ -49,7 +56,12 @@
       <section class="hero">
         <div class="hero-copy">
           <p class="eyebrow">AI workforce intelligence for physical work</p>
-          <img class="hero-logo" src="Auctorlogo-transparent.png" alt="Auctor logo" />
+          <img
+            class="hero-logo"
+            src="./Auctorlogo-transparent.png"
+            alt="Auctor logo"
+            onerror="this.onerror=null; this.src='./Auctorlogo.PNG';"
+          />
           <h1>Cognitive DNA for real work.</h1>
           <p class="hero-subtitle">
             The operating system for measuring human potential through real physical
@@ -197,8 +209,9 @@
                 <h4>Upload employee skills and project notes</h4>
                 <p>
                   Employers can upload an Excel or CSV export from their HRM system,
-                  paste the project requirement, and get a ranked staffing recommendation
-                  without asking Auctor to configure anything manually.
+                  paste the project requirement, and let Auctor run a greedy matching
+                  algorithm that selects the strongest fit first, then prioritizes
+                  employees who cover remaining project needs.
                 </p>
               </div>
               <div class="import-controls">
@@ -215,7 +228,7 @@
                 ></textarea>
                 <div class="import-actions">
                   <button id="loadDemoData" type="button">Use demo HRM data</button>
-                  <button id="rankEmployees" type="button">Rank best employees</button>
+                  <button id="rankEmployees" type="button">Greedy rank employees</button>
                 </div>
               </div>
               <div class="match-results" id="matchResults" aria-live="polite">
