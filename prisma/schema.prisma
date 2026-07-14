@@ -1,0 +1,115 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Company {
+  id           String   @id @default(cuid())
+  name         String
+  email        String   @unique
+  passwordHash String
+  createdAt    DateTime @default(now())
+
+  credits  CreditBalance?
+  orders   PackageOrder[]
+  invites  Invite[]
+}
+
+model CreditBalance {
+  id                  String   @id @default(cuid())
+  companyId           String   @unique
+  company             Company  @relation(fields: [companyId], references: [id])
+  assessmentsRemaining Int     @default(0)
+  updatedAt           DateTime @updatedAt
+}
+
+model PackageOrder {
+  id                String   @id @default(cuid())
+  companyId         String
+  company           Company  @relation(fields: [companyId], references: [id])
+  packageTier       String
+  assessmentsGranted Int
+  priceBHD          Float
+  status            String   @default("paid")
+  createdAt         DateTime @default(now())
+}
+
+model Track {
+  id          String    @id @default(cuid())
+  slug        String    @unique
+  title       String
+  description String
+  theme       String
+  stations    Station[]
+  invites     Invite[]
+}
+
+model Station {
+  id        String   @id @default(cuid())
+  trackId   String
+  track     Track    @relation(fields: [trackId], references: [id])
+  order     Int
+  type      String
+  title     String
+  config    String
+  results   StationResult[]
+}
+
+model Invite {
+  id            String    @id @default(cuid())
+  companyId     String
+  company       Company   @relation(fields: [companyId], references: [id])
+  trackId       String
+  track         Track     @relation(fields: [trackId], references: [id])
+  token         String    @unique
+  candidateName String?
+  candidateEmail String?
+  roleLabel     String
+  status        String    @default("pending")
+  createdAt     DateTime  @default(now())
+  session       Session?
+}
+
+model Session {
+  id                 String   @id @default(cuid())
+  inviteId           String   @unique
+  invite             Invite   @relation(fields: [inviteId], references: [id])
+  startedAt          DateTime?
+  completedAt        DateTime?
+  currentStationIndex Int     @default(0)
+  results            StationResult[]
+  report             SkillReport?
+}
+
+model StationResult {
+  id           String  @id @default(cuid())
+  sessionId    String
+  session      Session @relation(fields: [sessionId], references: [id])
+  stationId    String
+  station      Station @relation(fields: [stationId], references: [id])
+  rawAnswer    String
+  score        Float
+  timeMs       Int
+  reasoningText String?
+  createdAt    DateTime @default(now())
+}
+
+model SkillReport {
+  id              String   @id @default(cuid())
+  sessionId       String   @unique
+  session         Session  @relation(fields: [sessionId], references: [id])
+  technicalSkill  Int
+  problemSolving  Int
+  softSkills      Int
+  overall         Int
+  strengths       String
+  growthAreas     String
+  narrative       String
+  perStationNotes String
+  aiGenerated     Boolean  @default(true)
+  createdAt       DateTime @default(now())
+}
