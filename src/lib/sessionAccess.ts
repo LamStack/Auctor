@@ -15,7 +15,16 @@ export async function getOrCreateSession(inviteId: string) {
   const existing = await db.session.findUnique({ where: { inviteId } });
   if (existing) return existing;
 
-  return db.session.create({
-    data: { inviteId, startedAt: new Date(), currentStationIndex: 0 },
-  });
+  try {
+    return await db.session.create({
+      data: { inviteId, startedAt: new Date(), currentStationIndex: 0 },
+    });
+  } catch {
+    // Two concurrent start requests (e.g. React Strict Mode double-invoking the
+    // effect in dev) can race here — the loser hits the unique constraint on
+    // inviteId. Just return the session the winner created instead of throwing.
+    const createdByOtherRequest = await db.session.findUnique({ where: { inviteId } });
+    if (createdByOtherRequest) return createdByOtherRequest;
+    throw new Error("Failed to start session");
+  }
 }

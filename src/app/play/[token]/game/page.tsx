@@ -21,13 +21,25 @@ export default function GamePage() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    let cancelled = false;
+
     fetch(`/api/sessions/${token}/start`, { method: "POST" })
       .then(async (r) => {
-        if (!r.ok) throw new Error((await r.json()).error ?? "Could not start assessment.");
-        return r.json();
+        const text = await r.text();
+        const body = text ? JSON.parse(text) : null;
+        if (!r.ok) throw new Error(body?.error ?? "Could not start assessment. Please refresh and try again.");
+        return body;
       })
-      .then(setData)
-      .catch((e) => setError(e.message));
+      .then((body) => {
+        if (!cancelled) setData(body);
+      })
+      .catch((e) => {
+        if (!cancelled) setError(e.message ?? "Could not start assessment. Please refresh and try again.");
+      });
+
+    return () => {
+      cancelled = true;
+    };
   }, [token]);
 
   if (error) {
