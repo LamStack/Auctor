@@ -5,7 +5,7 @@
   "description": "AUCTOR — Bahrain's first gamified assessments platform.",
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "prisma migrate deploy && next build",
     "start": "next start",
     "lint": "next lint",
     "seed": "tsx prisma/seed.ts",

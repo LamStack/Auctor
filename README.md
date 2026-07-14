@@ -14,19 +14,25 @@ is a separate project.
 
 - Next.js 14 (App Router) + TypeScript + Tailwind CSS
 - Framer Motion for the game scene
-- Prisma + SQLite (swap to Postgres later via `DATABASE_URL`)
+- Prisma + PostgreSQL (works locally and on Vercel with the same free Neon database)
 - Anthropic Claude API for AI-generated skill report narratives (optional — falls back to a
   rule-based narrative if no API key is set)
 
 ## Setup
 
-```bash
-npm install
-cp .env.example .env   # already created for local dev; edit as needed
-npx prisma migrate dev --name init
-npm run seed
-npm run dev
-```
+1. Create a free Postgres database at [neon.tech](https://neon.tech) (no credit card, ~1 minute)
+   and copy its connection string.
+2. Create `.env` from the example and fill in `DATABASE_URL` with that connection string:
+   ```bash
+   cp .env.example .env
+   ```
+3. Install, migrate, seed, run:
+   ```bash
+   npm install
+   npx prisma migrate dev --name init
+   npm run seed
+   npm run dev
+   ```
 
 Open http://localhost:3000. A demo employer account is seeded:
 
@@ -51,6 +57,25 @@ labeled as such in the dashboard.
 
 Three seeded tracks: Junior Software Developer, QA / Software Testing, and
 Cybersecurity / IT Support Analyst.
+
+## Deploying (Vercel)
+
+GitHub Pages **cannot** host this app — it only serves static files, and AUCTOR needs a live
+server, database, and API routes. Vercel is the standard host for Next.js and deploys straight
+from this GitHub repo:
+
+1. Push this repo to GitHub (already done if you're reading this from there).
+2. At [vercel.com](https://vercel.com), sign in with GitHub and import this repository as a new
+   project. Vercel auto-detects Next.js — no config needed.
+3. Before deploying, add environment variables in the Vercel project settings (same names as
+   `.env.example`): `DATABASE_URL` (your Neon connection string — can be the same one you use
+   locally, or a separate database for production), `SESSION_SECRET` (a long random string), and
+   optionally `ANTHROPIC_API_KEY`.
+4. Deploy. The build command (`prisma migrate deploy && next build`, already set in
+   `package.json`) applies any pending database migrations automatically on every deploy.
+5. Run `npm run seed` once locally with `DATABASE_URL` pointed at the production database (or
+   temporarily paste the production connection string into your local `.env`) to seed the three
+   tracks and a demo company — seeding isn't part of the build step since it should only run once.
 
 ## Project structure
 
