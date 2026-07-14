@@ -14,6 +14,12 @@ const projectNotes = document.querySelector("#projectNotes");
 const loadDemoData = document.querySelector("#loadDemoData");
 const rankEmployees = document.querySelector("#rankEmployees");
 const matchResults = document.querySelector("#matchResults");
+const simulateLab = document.querySelector("#simulateLab");
+const labStatus = document.querySelector("#labStatus");
+const eventStream = document.querySelector("#eventStream");
+const skillOutput = document.querySelector("#skillOutput");
+const passportSummary = document.querySelector("#passportSummary");
+const detectedSummary = document.querySelector("#detectedSummary");
 
 let employeeRows = [];
 
@@ -240,7 +246,7 @@ function renderMatches() {
           <div class="rank">${index + 1}</div>
           <div>
             <strong>${employee.name}</strong>
-            <span>${employee.role} · greedy contribution: ${contributionText}</span>
+            <span>${employee.role} - greedy contribution: ${contributionText}</span>
             <small>${index === 0 ? "Selected first because this employee creates the highest immediate project fit." : "Selected next because this employee adds useful coverage after prior picks."}</small>
           </div>
           <b>${employee.score}%</b>
@@ -280,5 +286,47 @@ loadDemoData.addEventListener("click", () => {
 });
 
 rankEmployees.addEventListener("click", renderMatches);
+
+simulateLab.addEventListener("click", () => {
+  const events = eventStream.querySelectorAll("span");
+  const skillScores = [
+    ["Resilience", 91],
+    ["Spatial reasoning", 88],
+    ["Adaptive logic", 86],
+    ["Precision", 82],
+  ];
+
+  labStatus.textContent = "Analyzing CTL behavior...";
+  detectedSummary.innerHTML = `
+    <strong>Detected example</strong>
+    <span>Tracking LEGO movement, pauses, build order, and recovery pattern.</span>
+  `;
+  events.forEach((event) => event.classList.remove("detected"));
+  skillOutput.innerHTML = skillScores
+    .map(([skill]) => `<div><span>${skill}</span><strong>...</strong></div>`)
+    .join("");
+
+  events.forEach((event, index) => {
+    window.setTimeout(() => {
+      event.classList.add("detected");
+
+      if (index === events.length - 1) {
+        labStatus.textContent = "Cognitive Passport generated";
+        skillOutput.innerHTML = skillScores
+          .map(([skill, score]) => `<div><span>${skill}</span><strong>${score}%</strong></div>`)
+          .join("");
+        passportSummary.innerHTML = `
+          <strong>Sara Rahman</strong>
+          <span>Best fit: ambiguous fault isolation</span>
+          <small>Detected high recovery speed, strong spatial reasoning, and adaptive build strategy from the LEGO CTL session.</small>
+        `;
+        detectedSummary.innerHTML = `
+          <strong>Detected in session</strong>
+          <span>2.4s hesitation after failed build, 3 strategy changes, corrected sequence without guidance, high precision on final structure.</span>
+        `;
+      }
+    }, 260 * (index + 1));
+  });
+});
 
 updatePrice();

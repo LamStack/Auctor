@@ -242,10 +242,102 @@
           <div class="dashboard-panel" id="lab">
             <div class="panel-header">
               <div>
-                <p class="eyebrow">Assessment engine</p>
-                <h3>Challenge delivery and automated scoring</h3>
+                <p class="eyebrow">Virtual Lab</p>
+                <h3>Detect how employees solve LEGO® CTL challenges</h3>
               </div>
-              <span class="status-pill">No evaluators needed</span>
+              <span class="status-pill">Behavior-to-skill engine</span>
+            </div>
+            <div class="virtual-lab">
+              <div class="lab-video-card">
+                <div class="video-frame" aria-label="Virtual lab challenge preview">
+                  <div class="camera-bar">
+                    <span class="recording-dot"></span>
+                    <strong>Camera 01</strong>
+                    <small>Live CTL capture</small>
+                  </div>
+                  <div class="lego-stage">
+                    <span class="lego-block block-a"></span>
+                    <span class="lego-block block-b"></span>
+                    <span class="lego-block block-c"></span>
+                    <span class="lego-block block-d"></span>
+                    <span class="detection-box detect-build">build sequence</span>
+                    <span class="detection-box detect-pause">hesitation 2.4s</span>
+                    <span class="detection-box detect-recovery">recovery move</span>
+                    <span class="scan-line"></span>
+                  </div>
+                  <div class="camera-metrics">
+                    <span>Frame confidence 94%</span>
+                    <span>23 behavior events</span>
+                    <span>Identity verified</span>
+                  </div>
+                  <div class="video-overlay">
+                    <span>CTL session: Assembly optimization</span>
+                    <strong id="labStatus">Ready to analyze</strong>
+                  </div>
+                </div>
+                <button class="lab-analyze-button" id="simulateLab" type="button">Simulate LEGO® analysis</button>
+              </div>
+              <div class="lab-analysis-card">
+                <h4>What Auctor detects</h4>
+                <div class="event-stream" id="eventStream">
+                  <span>Tool sequence changes</span>
+                  <span>Hesitation points</span>
+                  <span>Error recovery</span>
+                  <span>Pattern transfer</span>
+                  <span>Persistence under constraint</span>
+                </div>
+                <div class="skill-output" id="skillOutput">
+                  <div><span>Resilience</span><strong>--</strong></div>
+                  <div><span>Spatial reasoning</span><strong>--</strong></div>
+                  <div><span>Adaptive logic</span><strong>--</strong></div>
+                  <div><span>Precision</span><strong>--</strong></div>
+                </div>
+                <div class="detected-summary" id="detectedSummary">
+                  <strong>Detected example</strong>
+                  <span>Waiting for analysis.</span>
+                </div>
+              </div>
+              <div class="lab-profile-card">
+                <p class="eyebrow">Example output</p>
+                <h4>Employee Cognitive Passport</h4>
+                <p>
+                  Auctor converts the LEGO®/CTL session into a simple skill profile
+                  employers can understand, compare, and use for project matching.
+                </p>
+                <div class="passport-summary" id="passportSummary">
+                  <strong>Sara Rahman</strong>
+                  <span>Best fit: ambiguous fault isolation</span>
+                  <small>Derived from recovery speed, build strategy, precision, and adaptation pattern.</small>
+                </div>
+              </div>
+            </div>
+            <div class="training-session-card">
+              <div>
+                <p class="eyebrow">Personalized training sessions</p>
+                <h4>Scenario-based learning generated from employee role and skill gaps</h4>
+                <p>
+                  Auctor does not stop at assessment. The SaaS recommends role-based
+                  training sessions, tracks completion, and updates the employee skill
+                  profile after each scenario.
+                </p>
+              </div>
+              <div class="training-grid">
+                <article>
+                  <span>Technician</span>
+                  <strong>Ambiguous sensor failure</strong>
+                  <small>Employee chooses tools, sequence, and recovery strategy under time pressure.</small>
+                </article>
+                <article>
+                  <span>Project manager</span>
+                  <strong>Delayed site handoff</strong>
+                  <small>Employee prioritizes stakeholders, constraints, risk, and escalation path.</small>
+                </article>
+                <article>
+                  <span>Operations lead</span>
+                  <strong>Two-line resource conflict</strong>
+                  <small>Employee allocates people, evaluates tradeoffs, and explains the decision.</small>
+                </article>
+              </div>
             </div>
             <div class="challenge-grid">
               <article>
