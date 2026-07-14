@@ -1,13 +1,15 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import Image from "next/image";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useTransform } from "framer-motion";
 import { ClientStation } from "@/lib/clientStationTypes";
 import { ProgressBar } from "@/components/ui/ProgressBar";
-import { StationNode } from "@/components/game/StationNode";
+import { StationProp } from "@/components/game/StationProp";
 import { CharacterAvatar } from "@/components/game/CharacterAvatar";
 import { StationOverlay } from "@/components/game/StationOverlay";
+import { useCharacterController, WorldStation } from "@/components/game/useCharacterController";
+import { SPAWN_POINT, WORLD_HEIGHT, WORLD_WIDTH, clamp, stationWorldPosition } from "@/lib/gameWorld";
 
 export function GameScene({
   token,
@@ -28,10 +30,48 @@ export function GameScene({
   const [activeStationId, setActiveStationId] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [completing, setCompleting] = useState(false);
+  const viewportRef = useRef<HTMLDivElement>(null);
 
   const currentIndex = useMemo(() => stations.findIndex((s) => !s.answered), [stations]);
   const answeredCount = stations.filter((s) => s.answered).length;
   const activeStation = stations.find((s) => s.id === activeStationId) ?? null;
+
+  const worldStations: WorldStation[] = useMemo(
+    () =>
+      stations.map((s, i) => {
+        const pos = stationWorldPosition(i);
+        return { id: s.id, x: pos.x, y: pos.y, interactive: i === currentIndex };
+      }),
+    [stations, currentIndex]
+  );
+
+  const handleArrive = useCallback((stationId: string) => {
+    setActiveStationId(stationId);
+  }, []);
+
+  const { x, y, walking, facingLeft, moveTo } = useCharacterController({
+    spawn: SPAWN_POINT,
+    stations: worldStations,
+    paused: Boolean(activeStationId) || completing,
+    onArrive: handleArrive,
+  });
+
+  const cameraX = useTransform(x, (val) => {
+    const vw = viewportRef.current?.clientWidth ?? 0;
+    return clamp(vw / 2 - val, Math.min(0, vw - WORLD_WIDTH), 0);
+  });
+  const cameraY = useTransform(y, (val) => {
+    const vh = viewportRef.current?.clientHeight ?? 0;
+    return clamp(vh / 2 - val, Math.min(0, vh - WORLD_HEIGHT), 0);
+  });
+
+  function handleViewportClick(e: React.MouseEvent<HTMLDivElement>) {
+    if (activeStationId || completing || !viewportRef.current) return;
+    const rect = viewportRef.current.getBoundingClientRect();
+    const worldX = e.clientX - rect.left - cameraX.get();
+    const worldY = e.clientY - rect.top - cameraY.get();
+    moveTo({ x: clamp(worldX, 0, WORLD_WIDTH), y: clamp(worldY, 0, WORLD_HEIGHT) });
+  }
 
   async function handleAnswer(rawAnswer: unknown, timeMs: number, reasoningText?: string) {
     if (!activeStation) return;
@@ -56,12 +96,9 @@ export function GameScene({
   }
 
   return (
-    <main className="relative min-h-screen overflow-hidden bg-game-sky pb-24">
-      <div className="pointer-events-none absolute -left-24 top-10 h-72 w-72 rounded-full bg-accent-400/20 blur-3xl" />
-      <div className="pointer-events-none absolute -right-16 top-72 h-96 w-96 rounded-full bg-mint-400/20 blur-3xl" />
-
+    <main className="relative min-h-screen overflow-hidden bg-game-sky pb-8">
       <header className="sticky top-0 z-20 border-b border-white/10 bg-brand-900/40 backdrop-blur">
-        <div className="mx-auto flex max-w-2xl items-center gap-4 px-6 py-4">
+        <div className="mx-auto flex max-w-5xl items-center gap-4 px-6 py-4">
           <Image src="/Auctorlogo-transparent.png" alt="AUCTOR" width={32} height={32} className="rounded-md" />
           <div className="min-w-0 flex-1">
             <p className="truncate text-sm font-semibold text-white">
@@ -73,40 +110,53 @@ export function GameScene({
             {answeredCount}/{stations.length}
           </span>
         </div>
-        <div className="mx-auto max-w-2xl px-6 pb-3">
+        <div className="mx-auto max-w-5xl px-6 pb-3">
           <ProgressBar value={(answeredCount / stations.length) * 100} tone="accent" />
         </div>
       </header>
 
-      <div className="relative mx-auto mt-12 max-w-2xl px-6">
-        <div className="pointer-events-none absolute left-1/2 top-0 h-full w-0 -translate-x-1/2 border-l-4 border-dashed border-white/25" />
+      <div className="mx-auto mt-6 max-w-5xl px-4">
+        <div
+          ref={viewportRef}
+          onClick={handleViewportClick}
+          className="relative h-[65vh] w-full cursor-crosshair overflow-hidden rounded-xl2 border-2 border-white/15 shadow-soft sm:h-[70vh]"
+        >
+          <motion.div
+            style={{ x: cameraX, y: cameraY, width: WORLD_WIDTH, height: WORLD_HEIGHT }}
+            className="absolute left-0 top-0 bg-[radial-gradient(circle_at_20%_15%,rgba(255,255,255,0.12),transparent_55%)]"
+          >
+            <div
+              className="absolute inset-0 opacity-40"
+              style={{
+                backgroundImage:
+                  "radial-gradient(rgba(255,255,255,0.28) 1.5px, transparent 1.5px)",
+                backgroundSize: "34px 34px",
+              }}
+            />
+            <div className="pointer-events-none absolute left-[8%] top-[60%] h-40 w-40 rounded-full bg-mint-400/20 blur-3xl" />
+            <div className="pointer-events-none absolute left-[55%] top-[10%] h-56 w-56 rounded-full bg-accent-400/20 blur-3xl" />
+            <div className="pointer-events-none absolute left-[75%] top-[55%] h-48 w-48 rounded-full bg-brand-400/20 blur-3xl" />
 
-        <div className="flex flex-col gap-14">
-          {stations.map((station, index) => {
-            const isLeft = index % 2 === 0;
-            const isCurrent = index === currentIndex;
-            const isLocked = index > currentIndex && currentIndex !== -1;
+            {stations.map((s, i) => {
+              const pos = stationWorldPosition(i);
+              return (
+                <StationProp
+                  key={s.id}
+                  station={s}
+                  x={pos.x}
+                  y={pos.y}
+                  isCurrent={i === currentIndex}
+                  onWalkTo={() => !activeStationId && moveTo(pos)}
+                />
+              );
+            })}
 
-            return (
-              <div key={station.id} className={`relative flex ${isLeft ? "justify-start" : "justify-end"}`}>
-                <div className={`w-[calc(50%+2.5rem)] ${isLeft ? "pr-6" : "pl-6"}`}>
-                  <StationNode
-                    station={station}
-                    isCurrent={isCurrent}
-                    isLocked={isLocked}
-                    align={isLeft ? "left" : "right"}
-                    onClick={() => isCurrent && setActiveStationId(station.id)}
-                  />
-                </div>
-                {isCurrent && (
-                  <div className={`absolute top-1/2 -translate-y-1/2 ${isLeft ? "left-1/2 ml-2" : "right-1/2 mr-2"}`}>
-                    <CharacterAvatar />
-                  </div>
-                )}
-              </div>
-            );
-          })}
+            <CharacterAvatar x={x} y={y} walking={walking} facingLeft={facingLeft} />
+          </motion.div>
         </div>
+        <p className="mt-3 text-center text-xs text-white/60">
+          Use arrow keys / WASD, or tap the ground to walk. Reach a glowing station to play it.
+        </p>
       </div>
 
       <AnimatePresence>
