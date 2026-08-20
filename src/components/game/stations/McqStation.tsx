@@ -32,8 +32,8 @@ export function McqStation({
                 onClick={() => setAnswers((a) => ({ ...a, [q.id]: opt.id }))}
                 className={`rounded-lg border-2 px-4 py-2.5 text-left text-sm transition ${
                   answers[q.id] === opt.id
-                    ? "border-brand-500 bg-brand-50 font-semibold text-brand-700"
-                    : "border-line hover:border-brand-300"
+                    ? "border-brand-400 bg-brand-500/10 font-semibold text-brand-300"
+                    : "border-line hover:border-brand-400/60"
                 }`}
               >
                 {opt.text}

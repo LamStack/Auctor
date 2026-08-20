@@ -163,6 +163,7 @@ export function GameScene({
         {activeStation && (
           <StationOverlay
             key={activeStation.id}
+            token={token}
             station={activeStation}
             submitting={submitting}
             onSubmit={handleAnswer}

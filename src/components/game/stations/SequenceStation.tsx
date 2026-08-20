@@ -25,7 +25,7 @@ export function SequenceStation({
             key={step.id}
             value={step}
             as="div"
-            className="flex cursor-grab items-center gap-3 rounded-lg border-2 border-line bg-white px-4 py-3 text-sm font-medium text-ink active:cursor-grabbing"
+            className="flex cursor-grab items-center gap-3 rounded-lg border-2 border-line bg-paper px-4 py-3 text-sm font-medium text-ink active:cursor-grabbing"
           >
             <motion.span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-brand-100 text-xs font-bold text-brand-700">
               {i + 1}

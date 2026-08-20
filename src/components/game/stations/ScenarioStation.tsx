@@ -28,8 +28,8 @@ export function ScenarioStation({
             onClick={() => setSelected(choice.id)}
             className={`rounded-lg border-2 px-4 py-2.5 text-left text-sm transition ${
               selected === choice.id
-                ? "border-brand-500 bg-brand-50 font-semibold text-brand-700"
-                : "border-line hover:border-brand-300"
+                ? "border-brand-400 bg-brand-500/10 font-semibold text-brand-300"
+                : "border-line hover:border-brand-400/60"
             }`}
           >
             {choice.text}
@@ -42,7 +42,7 @@ export function ScenarioStation({
           value={reasoning}
           onChange={(e) => setReasoning(e.target.value)}
           rows={3}
-          className="w-full rounded-lg border border-line px-3 py-2 text-sm outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-100"
+          className="w-full rounded-lg border border-line bg-paper px-3 py-2 text-sm text-ink outline-none focus:border-brand-400 focus:ring-2 focus:ring-brand-500/20"
         />
       </div>
       <Button

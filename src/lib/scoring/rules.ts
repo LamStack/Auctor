@@ -1,12 +1,18 @@
 import {
+  BranchingScenarioConfig,
   BugHuntConfig,
+  CodeIdeConfig,
   CodePatchConfig,
   McqConfig,
   ScenarioConfig,
   SequenceConfig,
+  SoftSkillGameConfig,
+  SqlSandboxConfig,
   StationType,
   TimedChallengeConfig,
 } from "@/lib/stationTypes";
+import { scoreCodeIde } from "@/lib/scoring/codeIdeScorer";
+import { scoreSqlSandbox } from "@/lib/scoring/sqlSandboxScorer";
 
 export interface StationScoreResult {
   score: number; // 0-100, general display score for the station
@@ -103,7 +109,71 @@ export function scoreTimedChallenge(
   };
 }
 
-export function scoreStation(type: StationType, config: unknown, rawAnswer: unknown): StationScoreResult {
+export function scoreBranchingScenario(
+  config: BranchingScenarioConfig,
+  rawAnswer: { path: { nodeId: string; choiceId: string }[] }
+): StationScoreResult {
+  const path = rawAnswer.path ?? [];
+  let softSum = 0;
+  let probSum = 0;
+  let count = 0;
+  const chosenTexts: string[] = [];
+
+  for (const step of path) {
+    const node = config.nodes[step.nodeId];
+    const choice = node?.choices.find((c) => c.id === step.choiceId);
+    if (!choice) continue;
+    softSum += clamp(((choice.weights.softSkills + 1) / 2) * 100);
+    probSum += clamp(((choice.weights.problemSolving + 1) / 2) * 100);
+    count += 1;
+    chosenTexts.push(choice.text);
+  }
+
+  const softSkills = count > 0 ? Math.round(softSum / count) : 50;
+  const problemSolving = count > 0 ? Math.round(probSum / count) : 50;
+  const score = Math.round((softSkills + problemSolving) / 2);
+
+  return {
+    score,
+    note:
+      chosenTexts.length > 0
+        ? `Walked a ${chosenTexts.length}-step scenario, most recently: "${chosenTexts[chosenTexts.length - 1]}".`
+        : "No decisions recorded.",
+    dimensions: { softSkills, problemSolving },
+  };
+}
+
+const DIFFICULTY_MULTIPLIER: Record<string, number> = { easy: 0.8, medium: 1, hard: 1.3 };
+
+export function scoreSoftSkillGame(
+  config: SoftSkillGameConfig,
+  rawAnswer: { path: { itemId: string; choiceId: string }[] }
+): StationScoreResult {
+  const path = rawAnswer.path ?? [];
+  let weightedSum = 0;
+  let weightTotal = 0;
+  let hardestCleared: string = "none";
+
+  for (const step of path) {
+    const item = config.items.find((i) => i.id === step.itemId);
+    const choice = item?.choices.find((c) => c.id === step.choiceId);
+    if (!item || !choice) continue;
+    const multiplier = DIFFICULTY_MULTIPLIER[item.difficulty] ?? 1;
+    weightedSum += choice.score * multiplier;
+    weightTotal += multiplier;
+    if (choice.score >= 60) hardestCleared = item.difficulty;
+  }
+
+  const score = weightTotal > 0 ? Math.round(clamp(weightedSum / weightTotal)) : 0;
+
+  return {
+    score,
+    note: `Completed ${path.length} adaptive rounds, reaching "${hardestCleared}" difficulty with a solid score.`,
+    dimensions: { softSkills: score, problemSolving: Math.round(score * 0.5) },
+  };
+}
+
+export async function scoreStation(type: StationType, config: unknown, rawAnswer: unknown): Promise<StationScoreResult> {
   switch (type) {
     case "mcq":
       return scoreMcq(config as McqConfig, rawAnswer as { answers: Record<string, string> });
@@ -120,6 +190,20 @@ export function scoreStation(type: StationType, config: unknown, rawAnswer: unkn
         config as TimedChallengeConfig,
         rawAnswer as { pairs: Record<string, string>; timeUsedMs: number }
       );
+    case "branching-scenario":
+      return scoreBranchingScenario(
+        config as BranchingScenarioConfig,
+        rawAnswer as { path: { nodeId: string; choiceId: string }[] }
+      );
+    case "softskill-game":
+      return scoreSoftSkillGame(
+        config as SoftSkillGameConfig,
+        rawAnswer as { path: { itemId: string; choiceId: string }[] }
+      );
+    case "sql-sandbox":
+      return scoreSqlSandbox(config as SqlSandboxConfig, rawAnswer as { statements: string[] });
+    case "code-ide":
+      return scoreCodeIde(config as CodeIdeConfig, rawAnswer as { languageId: string; code: string });
     default:
       return { score: 0, note: "Unscored station type.", dimensions: {} };
   }
@@ -160,7 +244,17 @@ export function aggregateRuleScores(inputs: AggregateInput[]): AggregateScores {
   const technicalSkill = avg("technicalSkill");
   const problemSolving = avg("problemSolving");
   const softSkills = avg("softSkills");
-  const overall = Math.round((technicalSkill + problemSolving + softSkills) / 3);
+
+  // Only average dimensions the track actually exercised — a purely
+  // technical track (no soft-skill stations) shouldn't have its overall
+  // score dragged down by an untested dimension defaulting to 0.
+  const testedDimensions = (["technicalSkill", "problemSolving", "softSkills"] as const).filter(
+    (key) => totals[key].count > 0
+  );
+  const overall =
+    testedDimensions.length > 0
+      ? Math.round(testedDimensions.reduce((sum, key) => sum + avg(key), 0) / testedDimensions.length)
+      : 0;
 
   return {
     technicalSkill,

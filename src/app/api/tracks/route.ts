@@ -13,6 +13,7 @@ export async function GET() {
       title: t.title,
       description: t.description,
       theme: t.theme,
+      category: t.category,
       stationCount: t._count.stations,
     })),
   });

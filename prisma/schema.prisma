@@ -8,11 +8,12 @@ datasource db {
 }
 
 model Company {
-  id           String   @id @default(cuid())
-  name         String
-  email        String   @unique
-  passwordHash String
-  createdAt    DateTime @default(now())
+  id            String   @id @default(cuid())
+  name          String
+  email         String   @unique
+  passwordHash  String
+  emailTemplate String?
+  createdAt     DateTime @default(now())
 
   credits  CreditBalance?
   orders   PackageOrder[]
@@ -44,34 +45,37 @@ model Track {
   title       String
   description String
   theme       String
+  category    String    @default("game-world")
   stations    Station[]
   invites     Invite[]
 }
 
 model Station {
-  id        String   @id @default(cuid())
-  trackId   String
-  track     Track    @relation(fields: [trackId], references: [id])
-  order     Int
-  type      String
-  title     String
-  config    String
-  results   StationResult[]
+  id           String   @id @default(cuid())
+  trackId      String
+  track        Track    @relation(fields: [trackId], references: [id])
+  order        Int
+  type         String
+  title        String
+  config       String
+  results      StationResult[]
+  chatMessages ChatMessage[]
 }
 
 model Invite {
-  id            String    @id @default(cuid())
-  companyId     String
-  company       Company   @relation(fields: [companyId], references: [id])
-  trackId       String
-  track         Track     @relation(fields: [trackId], references: [id])
-  token         String    @unique
-  candidateName String?
+  id             String    @id @default(cuid())
+  companyId      String
+  company        Company   @relation(fields: [companyId], references: [id])
+  trackId        String
+  track          Track     @relation(fields: [trackId], references: [id])
+  token          String    @unique
+  candidateId    String?
+  candidateName  String?
   candidateEmail String?
-  roleLabel     String
-  status        String    @default("pending")
-  createdAt     DateTime  @default(now())
-  session       Session?
+  roleLabel      String
+  status         String    @default("pending")
+  createdAt      DateTime  @default(now())
+  session        Session?
 }
 
 model Session {
@@ -83,19 +87,21 @@ model Session {
   currentStationIndex Int     @default(0)
   results            StationResult[]
   report             SkillReport?
+  chatMessages       ChatMessage[]
 }
 
 model StationResult {
-  id           String  @id @default(cuid())
-  sessionId    String
-  session      Session @relation(fields: [sessionId], references: [id])
-  stationId    String
-  station      Station @relation(fields: [stationId], references: [id])
-  rawAnswer    String
-  score        Float
-  timeMs       Int
+  id            String   @id @default(cuid())
+  sessionId     String
+  session       Session  @relation(fields: [sessionId], references: [id])
+  stationId     String
+  station       Station  @relation(fields: [stationId], references: [id])
+  rawAnswer     String
+  score         Float
+  dimensions    String   @default("{}")
+  timeMs        Int
   reasoningText String?
-  createdAt    DateTime @default(now())
+  createdAt     DateTime @default(now())
 }
 
 model SkillReport {
@@ -106,10 +112,23 @@ model SkillReport {
   problemSolving  Int
   softSkills      Int
   overall         Int
+  rank            Int?
+  rankTotal       Int?
   strengths       String
   growthAreas     String
   narrative       String
   perStationNotes String
   aiGenerated     Boolean  @default(true)
   createdAt       DateTime @default(now())
+}
+
+model ChatMessage {
+  id        String   @id @default(cuid())
+  sessionId String
+  session   Session  @relation(fields: [sessionId], references: [id])
+  stationId String
+  station   Station  @relation(fields: [stationId], references: [id])
+  role      String
+  content   String
+  createdAt DateTime @default(now())
 }

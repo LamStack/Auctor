@@ -14,5 +14,8 @@ export async function GET(_request: Request, { params }: { params: { token: stri
     status: invite.status,
     stationCount: invite.track.stations.length,
     completed: Boolean(invite.session?.completedAt),
+    hasIntake: Boolean(invite.candidateId && invite.candidateName && invite.candidateEmail),
+    rank: invite.session?.report?.rank ?? null,
+    rankTotal: invite.session?.report?.rankTotal ?? null,
   });
 }

@@ -10,6 +10,7 @@ interface Track {
   id: string;
   title: string;
   description: string;
+  category: string;
   stationCount: number;
 }
 
@@ -17,8 +18,6 @@ export default function TracksPage() {
   const [tracks, setTracks] = useState<Track[]>([]);
   const [selectedTrackId, setSelectedTrackId] = useState<string | null>(null);
   const [roleLabel, setRoleLabel] = useState("");
-  const [candidateName, setCandidateName] = useState("");
-  const [candidateEmail, setCandidateEmail] = useState("");
   const [generatedLink, setGeneratedLink] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -39,12 +38,7 @@ export default function TracksPage() {
     const res = await fetch("/api/invites", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        trackId: selectedTrackId,
-        roleLabel,
-        candidateName: candidateName || undefined,
-        candidateEmail: candidateEmail || undefined,
-      }),
+      body: JSON.stringify({ trackId: selectedTrackId, roleLabel }),
     });
 
     setLoading(false);
@@ -60,7 +54,10 @@ export default function TracksPage() {
     <div className="flex flex-col gap-8">
       <div>
         <h1 className="font-display text-2xl font-bold text-ink">Assessment tracks</h1>
-        <p className="mt-1 text-sm text-muted">Pick a track and generate a shareable link for a candidate.</p>
+        <p className="mt-1 text-sm text-muted">
+          Pick a track and generate a shareable link. Candidates enter their own name, email, and ID
+          number when they open it.
+        </p>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-3">
@@ -69,10 +66,15 @@ export default function TracksPage() {
             key={track.id}
             onClick={() => setSelectedTrackId(track.id)}
             className={`rounded-xl2 border-2 p-5 text-left transition ${
-              selectedTrackId === track.id ? "border-brand-500 bg-brand-50" : "border-line bg-panel hover:border-brand-300"
+              selectedTrackId === track.id ? "border-brand-400 bg-brand-500/10" : "border-line bg-panel hover:border-brand-400/60"
             }`}
           >
-            <Badge tone="brand">{track.stationCount} stations</Badge>
+            <div className="flex items-center gap-2">
+              <Badge tone="brand">{track.stationCount} stations</Badge>
+              <Badge tone="neutral" className="capitalize">
+                {track.category.replace("-", " ")}
+              </Badge>
+            </div>
             <h3 className="font-display mt-3 text-base font-bold text-ink">{track.title}</h3>
             <p className="mt-1 text-sm text-muted">{track.description}</p>
           </button>
@@ -87,23 +89,10 @@ export default function TracksPage() {
               <Label htmlFor="roleLabel">Role</Label>
               <Input
                 id="roleLabel"
-                placeholder="e.g. Summer Intern — Junior Developer"
+                placeholder="e.g. Summer Intern &mdash; Junior Developer"
                 required
                 value={roleLabel}
                 onChange={(e) => setRoleLabel(e.target.value)}
-              />
-            </div>
-            <div>
-              <Label htmlFor="candidateName">Candidate name (optional)</Label>
-              <Input id="candidateName" value={candidateName} onChange={(e) => setCandidateName(e.target.value)} />
-            </div>
-            <div>
-              <Label htmlFor="candidateEmail">Candidate email (optional)</Label>
-              <Input
-                id="candidateEmail"
-                type="email"
-                value={candidateEmail}
-                onChange={(e) => setCandidateEmail(e.target.value)}
               />
             </div>
             {error && <p className="text-sm font-medium text-danger">{error}</p>}
@@ -113,9 +102,9 @@ export default function TracksPage() {
           </form>
 
           {generatedLink && (
-            <div className="mt-5 rounded-lg border border-mint-300 bg-mint-50 p-4">
+            <div className="mt-5 rounded-lg border border-mint-400/40 bg-mint-500/10 p-4">
               <p className="mb-2 text-sm font-semibold text-ink">Send this link to your candidate:</p>
-              <code className="block break-all rounded bg-white px-3 py-2 text-xs text-brand-700">{generatedLink}</code>
+              <code className="block break-all rounded bg-paper px-3 py-2 text-xs text-mint-300">{generatedLink}</code>
             </div>
           )}
         </Card>

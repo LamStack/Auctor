@@ -15,6 +15,7 @@ async function main() {
         title: track.title,
         description: track.description,
         theme: track.theme,
+        category: track.category,
         stations: {
           create: track.stations.map((s) => ({
             order: s.order,

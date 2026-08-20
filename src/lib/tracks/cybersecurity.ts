@@ -6,6 +6,7 @@ export const cybersecurityTrack: TrackDefinition = {
   description:
     "An incident-response quest through security fundamentals, threat triage, and calm-under-pressure judgment.",
   theme: "sec-ops",
+  category: "game-world",
   stations: [
     {
       order: 1,

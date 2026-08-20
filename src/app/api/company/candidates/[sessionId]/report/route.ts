@@ -20,6 +20,7 @@ export async function GET(_request: Request, { params }: { params: { sessionId: 
   }
 
   return NextResponse.json({
+    candidateId: session.invite.candidateId,
     candidateName: session.invite.candidateName ?? "Anonymous candidate",
     candidateEmail: session.invite.candidateEmail,
     trackTitle: session.invite.track.title,
@@ -27,6 +28,8 @@ export async function GET(_request: Request, { params }: { params: { sessionId: 
     completedAt: session.completedAt,
     report: {
       overall: session.report.overall,
+      rank: session.report.rank,
+      rankTotal: session.report.rankTotal,
       technicalSkill: session.report.technicalSkill,
       problemSolving: session.report.problemSolving,
       softSkills: session.report.softSkills,

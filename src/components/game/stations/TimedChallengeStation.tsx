@@ -71,10 +71,10 @@ export function TimedChallengeStation({
               onClick={() => setActiveLeft(item.id)}
               className={`rounded-lg border-2 px-3 py-2.5 text-left text-xs font-medium transition ${
                 pairs[item.id]
-                  ? "border-mint-400 bg-mint-50"
+                  ? "border-mint-400 bg-mint-500/10"
                   : activeLeft === item.id
-                    ? "border-accent-500 bg-accent-50"
-                    : "border-line hover:border-brand-300"
+                    ? "border-accent-400 bg-accent-500/10"
+                    : "border-line hover:border-brand-400/60"
               }`}
             >
               {item.text}
@@ -89,7 +89,7 @@ export function TimedChallengeStation({
               onClick={() => handleRightClick(item.id)}
               disabled={pairedRightIds.has(item.id)}
               className={`rounded-lg border-2 px-3 py-2.5 text-left text-xs font-medium transition ${
-                pairedRightIds.has(item.id) ? "border-mint-400 bg-mint-50 opacity-60" : "border-line hover:border-brand-300"
+                pairedRightIds.has(item.id) ? "border-mint-400 bg-mint-500/10 opacity-60" : "border-line hover:border-brand-400/60"
               }`}
             >
               {item.text}

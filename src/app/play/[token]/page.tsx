@@ -1,9 +1,8 @@
 import { notFound } from "next/navigation";
-import Link from "next/link";
 import Image from "next/image";
 import { getInviteByToken } from "@/lib/sessionAccess";
-import { buttonClasses } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
+import { IntakeGate } from "@/components/game/IntakeGate";
 
 export default async function PlayIntroPage({ params }: { params: { token: string } }) {
   const invite = await getInviteByToken(params.token);
@@ -13,7 +12,7 @@ export default async function PlayIntroPage({ params }: { params: { token: strin
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-game-sky px-6 py-12">
-      <div className="w-full max-w-xl rounded-xl2 bg-white/95 p-8 shadow-soft backdrop-blur">
+      <div className="w-full max-w-xl rounded-xl2 border border-line bg-panel/95 p-8 shadow-soft backdrop-blur">
         <div className="mb-6 flex items-center gap-3">
           <Image src="/Auctorlogo-transparent.png" alt="AUCTOR" width={40} height={40} className="rounded-lg" />
           <div>
@@ -40,20 +39,14 @@ export default async function PlayIntroPage({ params }: { params: { token: strin
         </div>
 
         {completed ? (
-          <div className="mt-6 rounded-lg border border-mint-300 bg-mint-50 p-4 text-sm font-medium text-ink">
+          <div className="mt-6 rounded-lg border border-mint-400/40 bg-mint-500/10 p-4 text-sm font-medium text-ink">
             You&rsquo;ve already completed this assessment. Thanks for playing!
           </div>
         ) : (
-          <>
-            <p className="mt-6 text-sm text-muted">
-              You&rsquo;ll walk through a short interactive world with quizzes, logic puzzles, bug hunts, and
-              decision scenarios. Answer honestly and at your own pace &mdash; there&rsquo;s no traditional
-              timer except on the speed round.
-            </p>
-            <Link href={`/play/${params.token}/game`} className={`${buttonClasses("accent")} mt-6 w-full`}>
-              Start assessment
-            </Link>
-          </>
+          <IntakeGate
+            token={params.token}
+            hasIntake={Boolean(invite.candidateId && invite.candidateName && invite.candidateEmail)}
+          />
         )}
       </div>
     </main>

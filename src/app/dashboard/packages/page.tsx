@@ -56,7 +56,7 @@ export default function PackagesPage() {
       </div>
 
       {message && (
-        <div className="rounded-lg border border-mint-300 bg-mint-50 px-4 py-3 text-sm font-medium text-ink">
+        <div className="rounded-lg border border-mint-400/40 bg-mint-500/10 px-4 py-3 text-sm font-medium text-ink">
           {message}
         </div>
       )}

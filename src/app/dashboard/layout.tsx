@@ -10,6 +10,7 @@ const navItems = [
   { href: "/dashboard/tracks", label: "Assessment tracks" },
   { href: "/dashboard/candidates", label: "Candidates" },
   { href: "/dashboard/packages", label: "Packages" },
+  { href: "/dashboard/settings", label: "Settings" },
 ];
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
@@ -18,7 +19,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
 
   return (
     <div className="min-h-screen bg-paper">
-      <header className="sticky top-0 z-10 border-b border-line bg-white/90 backdrop-blur">
+      <header className="sticky top-0 z-10 border-b border-line bg-panel/90 backdrop-blur">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
           <Link href="/dashboard" className="flex items-center gap-2.5">
             <Image src="/Auctorlogo-transparent.png" alt="AUCTOR" width={32} height={32} className="rounded-md" />
@@ -39,7 +40,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
               <Link
                 key={item.href}
                 href={item.href}
-                className="rounded-lg px-4 py-2.5 text-sm font-semibold text-ink hover:bg-brand-50 hover:text-brand-700"
+                className="rounded-lg px-4 py-2.5 text-sm font-semibold text-ink hover:bg-brand-500/10 hover:text-brand-300"
               >
                 {item.label}
               </Link>

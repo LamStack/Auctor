@@ -1,7 +1,7 @@
 import { db } from "@/lib/db";
-import { aggregateRuleScores, scoreStation } from "@/lib/scoring/rules";
+import { aggregateRuleScores } from "@/lib/scoring/rules";
 import { generateAiNarrative } from "@/lib/scoring/ai";
-import { StationType } from "@/lib/stationTypes";
+import { sendResultsEmail } from "@/lib/email";
 
 export async function completeSessionAndScore(sessionId: string) {
   const session = await db.session.findUniqueOrThrow({
@@ -14,12 +14,13 @@ export async function completeSessionAndScore(sessionId: string) {
 
   const sortedResults = [...session.results].sort((a, b) => a.station.order - b.station.order);
 
-  // Recompute per-dimension scores from the stored config + raw answer, since
-  // StationResult only persists the display-facing scalar score.
+  // Each StationResult already carries its own score/dimensions computed at
+  // answer time (real execution for coding/SQL stations happens once, then);
+  // aggregation just combines what's already stored instead of re-running it.
   const aggregate = aggregateRuleScores(
     sortedResults.map((r) => ({
       stationTitle: r.station.title,
-      result: scoreStation(r.station.type as StationType, JSON.parse(r.station.config), JSON.parse(r.rawAnswer)),
+      result: { score: r.score, note: r.reasoningText ?? "", dimensions: JSON.parse(r.dimensions) },
     }))
   );
 
@@ -29,6 +30,13 @@ export async function completeSessionAndScore(sessionId: string) {
     aggregate,
   });
 
+  const priorScores = await db.skillReport.findMany({
+    where: { session: { invite: { companyId: session.invite.companyId, trackId: session.invite.trackId } } },
+    select: { overall: true },
+  });
+  const rankTotal = priorScores.length + 1;
+  const rank = priorScores.filter((p) => p.overall > aggregate.overall).length + 1;
+
   const report = await db.skillReport.create({
     data: {
       sessionId: session.id,
@@ -36,6 +44,8 @@ export async function completeSessionAndScore(sessionId: string) {
       problemSolving: aggregate.problemSolving,
       softSkills: aggregate.softSkills,
       overall: aggregate.overall,
+      rank,
+      rankTotal,
       strengths: JSON.stringify(ai.strengths),
       growthAreas: JSON.stringify(ai.growthAreas),
       narrative: ai.narrative,
@@ -51,6 +61,17 @@ export async function completeSessionAndScore(sessionId: string) {
     await db.creditBalance.update({
       where: { companyId: session.invite.companyId },
       data: { assessmentsRemaining: { decrement: 1 } },
+    });
+  }
+
+  if (session.invite.candidateEmail) {
+    await sendResultsEmail({
+      to: session.invite.candidateEmail,
+      candidateName: session.invite.candidateName ?? "there",
+      companyName: session.invite.company.name,
+      roleLabel: session.invite.roleLabel,
+      overall: aggregate.overall,
+      emailTemplate: session.invite.company.emailTemplate,
     });
   }
 

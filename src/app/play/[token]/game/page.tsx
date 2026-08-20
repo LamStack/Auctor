@@ -45,7 +45,7 @@ export default function GamePage() {
   if (error) {
     return (
       <main className="flex min-h-screen items-center justify-center bg-game-sky px-6">
-        <p className="rounded-xl2 bg-white p-6 text-sm font-medium text-danger shadow-soft">{error}</p>
+        <p className="rounded-xl2 border border-line bg-panel p-6 text-sm font-medium text-danger shadow-soft">{error}</p>
       </main>
     );
   }

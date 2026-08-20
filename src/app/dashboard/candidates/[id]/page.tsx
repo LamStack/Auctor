@@ -31,12 +31,20 @@ export default async function CandidateReportPage({ params }: { params: { id: st
         <h1 className="font-display text-2xl font-bold text-ink">
           {session.invite.candidateName ?? "Anonymous candidate"}
         </h1>
+        <p className="mt-1 font-mono text-xs text-muted">
+          ID {session.invite.candidateId ?? "—"} &middot; {session.invite.candidateEmail ?? "no email on file"}
+        </p>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-5">
         <Card className="lg:col-span-2">
           <p className="text-xs font-semibold uppercase tracking-wide text-muted">Overall score</p>
-          <p className="font-display mt-1 text-5xl font-bold text-brand-600">{session.report.overall}<span className="text-2xl text-muted">/100</span></p>
+          <p className="font-display mt-1 text-5xl font-bold text-brand-300">{session.report.overall}<span className="text-2xl text-muted">/100</span></p>
+          {session.report.rank && session.report.rankTotal && (
+            <Badge tone="accent" className="mt-2">
+              Rank #{session.report.rank} of {session.report.rankTotal} for this track
+            </Badge>
+          )}
           <div className="mt-4">
             <SkillRadarChart
               technicalSkill={session.report.technicalSkill}
@@ -55,7 +63,7 @@ export default async function CandidateReportPage({ params }: { params: { id: st
 
           <div className="mt-5 grid gap-4 sm:grid-cols-2">
             <div>
-              <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-mint-600">Strengths</p>
+              <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-mint-400">Strengths</p>
               <ul className="flex flex-col gap-1.5 text-sm text-ink">
                 {strengths.map((s, i) => (
                   <li key={i} className="flex gap-2"><span className="text-mint-500">+</span>{s}</li>
@@ -63,7 +71,7 @@ export default async function CandidateReportPage({ params }: { params: { id: st
               </ul>
             </div>
             <div>
-              <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-accent-600">Growth areas</p>
+              <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-accent-400">Growth areas</p>
               <ul className="flex flex-col gap-1.5 text-sm text-ink">
                 {growthAreas.map((s, i) => (
                   <li key={i} className="flex gap-2"><span className="text-accent-500">&middot;</span>{s}</li>

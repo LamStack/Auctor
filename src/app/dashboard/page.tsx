@@ -30,7 +30,7 @@ export default async function DashboardOverviewPage() {
     <div className="flex flex-col gap-8">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <p className="text-sm font-semibold uppercase tracking-wide text-accent-600">Bahrain&rsquo;s first gamified assessments platform</p>
+          <p className="text-sm font-semibold uppercase tracking-wide text-accent-400">Bahrain&rsquo;s first gamified assessments platform</p>
           <h1 className="font-display text-2xl font-bold text-ink">Welcome back, {company.name}</h1>
         </div>
         <Link href="/dashboard/tracks" className={buttonClasses("accent")}>
@@ -62,7 +62,7 @@ export default async function DashboardOverviewPage() {
         {invites.length === 0 ? (
           <p className="text-sm text-muted">
             No assessments sent yet.{" "}
-            <Link href="/dashboard/tracks" className="font-semibold text-brand-600">
+            <Link href="/dashboard/tracks" className="font-semibold text-brand-300">
               Send your first one
             </Link>
             .

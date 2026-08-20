@@ -17,6 +17,7 @@ export default async function CandidatesPage() {
     .filter((i) => i.session?.report)
     .map((i) => ({
       sessionId: i.session!.id,
+      candidateId: i.candidateId ?? "—",
       name: i.candidateName ?? "Anonymous candidate",
       role: i.roleLabel,
       track: i.track.title,
@@ -38,6 +39,7 @@ export default async function CandidatesPage() {
           <table className="w-full text-left text-sm">
             <thead className="border-b border-line text-xs uppercase tracking-wide text-muted">
               <tr>
+                <th className="px-6 py-3">ID</th>
                 <th className="px-6 py-3">Candidate</th>
                 <th className="px-6 py-3">Role</th>
                 <th className="px-6 py-3">Track</th>
@@ -46,9 +48,10 @@ export default async function CandidatesPage() {
             </thead>
             <tbody className="divide-y divide-line">
               {candidates.map((c, i) => (
-                <tr key={c.sessionId} className="hover:bg-brand-50/50">
+                <tr key={c.sessionId} className="hover:bg-brand-500/10">
+                  <td className="px-6 py-4 font-mono text-xs text-muted">{c.candidateId}</td>
                   <td className="px-6 py-4">
-                    <Link href={`/dashboard/candidates/${c.sessionId}`} className="font-semibold text-ink hover:text-brand-600">
+                    <Link href={`/dashboard/candidates/${c.sessionId}`} className="font-semibold text-ink hover:text-brand-300">
                       {i === 0 && <span className="mr-1">🏆</span>}
                       {c.name}
                     </Link>

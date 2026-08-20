@@ -34,7 +34,7 @@ export async function POST(
   }
 
   const config = JSON.parse(station.config);
-  const result = scoreStation(station.type as StationType, config, body.data.rawAnswer);
+  const result = await scoreStation(station.type as StationType, config, body.data.rawAnswer);
 
   await db.stationResult.create({
     data: {
@@ -42,6 +42,7 @@ export async function POST(
       stationId: station.id,
       rawAnswer: JSON.stringify(body.data.rawAnswer),
       score: result.score,
+      dimensions: JSON.stringify(result.dimensions),
       timeMs: body.data.timeMs,
       reasoningText: body.data.reasoningText ?? result.note,
     },

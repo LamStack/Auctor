@@ -10,5 +10,6 @@ export async function GET() {
     name: company.name,
     email: company.email,
     assessmentsRemaining: company.credits?.assessmentsRemaining ?? 0,
+    emailTemplate: company.emailTemplate,
   });
 }

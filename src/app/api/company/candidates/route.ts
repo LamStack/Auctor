@@ -16,11 +16,14 @@ export async function GET() {
     .filter((i) => i.session?.report)
     .map((i) => ({
       sessionId: i.session!.id,
+      candidateId: i.candidateId,
       candidateName: i.candidateName ?? "Anonymous candidate",
       candidateEmail: i.candidateEmail,
       trackTitle: i.track.title,
       roleLabel: i.roleLabel,
       overall: i.session!.report!.overall,
+      rank: i.session!.report!.rank,
+      rankTotal: i.session!.report!.rankTotal,
       technicalSkill: i.session!.report!.technicalSkill,
       problemSolving: i.session!.report!.problemSolving,
       softSkills: i.session!.report!.softSkills,

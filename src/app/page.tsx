@@ -12,7 +12,7 @@ export default function HomePage() {
           <span className="font-display text-lg font-bold text-ink">AUCTOR</span>
         </div>
         <nav className="flex items-center gap-3">
-          <Link href="/login" className="text-sm font-semibold text-ink hover:text-brand-600">
+          <Link href="/login" className="text-sm font-semibold text-ink hover:text-brand-300">
             Sign in
           </Link>
           <Link href="/signup" className={buttonClasses("primary", "text-sm")}>
@@ -29,9 +29,10 @@ export default function HomePage() {
           Hire on skill, not paper.
         </h1>
         <p className="max-w-2xl text-lg text-muted">
-          AUCTOR turns technical hiring into a game. Candidates walk through an interactive world,
-          solve real IT challenges, and AUCTOR turns it into a skill report your team can trust &mdash;
-          technical ability, problem-solving, and soft skills, all in one place.
+          AUCTOR turns hiring into a game built for the role. Developers write and run real code,
+          sales candidates work a live negotiation, data candidates query a real database, and
+          everyone plays adaptive soft-skill rounds &mdash; all scored into one skill report your
+          team can trust.
         </p>
         <div className="flex flex-wrap items-center justify-center gap-4">
           <Link href="/signup" className={buttonClasses("primary")}>
@@ -45,10 +46,10 @@ export default function HomePage() {
 
       <section className="mx-auto grid max-w-6xl gap-6 px-6 pb-24 sm:grid-cols-3">
         <Card>
-          <h3 className="font-display mb-2 text-lg font-bold text-ink">Gamified assessments</h3>
+          <h3 className="font-display mb-2 text-lg font-bold text-ink">Real, role-specific engines</h3>
           <p className="text-sm text-muted">
-            Candidates play through a stylized world &mdash; quizzes, bug hunts, drag-and-drop logic,
-            and scenario decisions &mdash; instead of a static test form.
+            A live coding IDE with test cases, a real SQL sandbox, branching sales scenarios, and
+            adaptive soft-skill games &mdash; not just a form with questions.
           </p>
         </Card>
         <Card>
