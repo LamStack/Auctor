@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(echo \"EXIT: $?\")",
+      "Bash(curl -s -o /dev/null -w \"homepage: %{http_code}\\\\n\" --max-time 15 http://localhost:3211/)"
+    ]
+  }
+}
