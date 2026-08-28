@@ -1,9 +1,11 @@
 import {
+  AdaptiveCodingConfig,
   BranchingScenarioConfig,
   BugHuntConfig,
   CodeIdeConfig,
   CodePatchConfig,
   McqConfig,
+  RubricResponseConfig,
   ScenarioConfig,
   SequenceConfig,
   SoftSkillGameConfig,
@@ -13,6 +15,9 @@ import {
 } from "@/lib/stationTypes";
 import { scoreCodeIde } from "@/lib/scoring/codeIdeScorer";
 import { scoreSqlSandbox } from "@/lib/scoring/sqlSandboxScorer";
+import { weightedCompositeScore } from "@/lib/scoring/adaptiveBank";
+import { scoreAdaptiveCoding } from "@/lib/scoring/adaptiveCodingScorer";
+import { scoreRubricResponse } from "@/lib/scoring/rubricGrader";
 
 export interface StationScoreResult {
   score: number; // 0-100, general display score for the station
@@ -143,28 +148,24 @@ export function scoreBranchingScenario(
   };
 }
 
-const DIFFICULTY_MULTIPLIER: Record<string, number> = { easy: 0.8, medium: 1, hard: 1.3 };
-
 export function scoreSoftSkillGame(
   config: SoftSkillGameConfig,
   rawAnswer: { path: { itemId: string; choiceId: string }[] }
 ): StationScoreResult {
   const path = rawAnswer.path ?? [];
-  let weightedSum = 0;
-  let weightTotal = 0;
-  let hardestCleared: string = "none";
+  let hardestCleared = "none";
 
-  for (const step of path) {
-    const item = config.items.find((i) => i.id === step.itemId);
-    const choice = item?.choices.find((c) => c.id === step.choiceId);
-    if (!item || !choice) continue;
-    const multiplier = DIFFICULTY_MULTIPLIER[item.difficulty] ?? 1;
-    weightedSum += choice.score * multiplier;
-    weightTotal += multiplier;
-    if (choice.score >= 60) hardestCleared = item.difficulty;
-  }
+  const rounds = path
+    .map((step) => {
+      const item = config.items.find((i) => i.id === step.itemId);
+      const choice = item?.choices.find((c) => c.id === step.choiceId);
+      if (!item || !choice) return null;
+      if (choice.score >= 60) hardestCleared = item.difficulty;
+      return { difficulty: item.difficulty, score: choice.score };
+    })
+    .filter((r): r is { difficulty: "easy" | "medium" | "hard"; score: number } => r !== null);
 
-  const score = weightTotal > 0 ? Math.round(clamp(weightedSum / weightTotal)) : 0;
+  const score = weightedCompositeScore(rounds);
 
   return {
     score,
@@ -204,6 +205,13 @@ export async function scoreStation(type: StationType, config: unknown, rawAnswer
       return scoreSqlSandbox(config as SqlSandboxConfig, rawAnswer as { statements: string[] });
     case "code-ide":
       return scoreCodeIde(config as CodeIdeConfig, rawAnswer as { languageId: string; code: string });
+    case "adaptive-coding":
+      return scoreAdaptiveCoding(
+        config as AdaptiveCodingConfig,
+        rawAnswer as { path: { problemId: string; code: string }[] }
+      );
+    case "rubric-response":
+      return scoreRubricResponse(config as RubricResponseConfig, rawAnswer as { response: string });
     default:
       return { score: 0, note: "Unscored station type.", dimensions: {} };
   }

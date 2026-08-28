@@ -1,8 +1,9 @@
-import { SoftSkillGameConfig, StationType } from "@/lib/stationTypes";
+import { AdaptiveCodingConfig, SoftSkillGameConfig, StationType } from "@/lib/stationTypes";
 import { pickNextSoftSkillItem, sanitizeSoftSkillItem } from "@/lib/scoring/softSkillAdaptive";
+import { pickNextAdaptiveCodingProblem, sanitizeAdaptiveCodingProblem } from "@/lib/scoring/adaptiveCodingScorer";
 
 /** Strips answer keys from a station config before it is sent to the candidate's browser. */
-export function sanitizeStationConfig(type: StationType, config: any): any {
+export async function sanitizeStationConfig(type: StationType, config: any): Promise<any> {
   switch (type) {
     case "mcq":
       return {
@@ -91,6 +92,26 @@ export function sanitizeStationConfig(type: StationType, config: any): any {
         firstItem: first ? sanitizeSoftSkillItem(first) : null,
       };
     }
+    case "adaptive-coding": {
+      const first = await pickNextAdaptiveCodingProblem(config as AdaptiveCodingConfig, []);
+      return {
+        intro: config.intro,
+        rounds: config.rounds,
+        language: {
+          id: config.language.id,
+          label: config.language.label,
+          monacoLanguage: config.language.monacoLanguage,
+        },
+        firstProblem: first ? sanitizeAdaptiveCodingProblem(first) : null,
+      };
+    }
+    case "rubric-response":
+      return {
+        level: config.level,
+        prompt: config.prompt,
+        contextMaterial: config.contextMaterial,
+        responseType: config.responseType,
+      };
     default:
       return config;
   }

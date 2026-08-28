@@ -10,7 +10,9 @@ export type StationType =
   | "code-ide"
   | "sql-sandbox"
   | "branching-scenario"
-  | "softskill-game";
+  | "softskill-game"
+  | "adaptive-coding"
+  | "rubric-response";
 
 export interface ClientStation {
   id: string;
@@ -95,4 +97,27 @@ export interface SoftSkillGameClientConfig {
   intro: string;
   rounds: number;
   firstItem: SoftSkillItemClient | null;
+}
+
+export interface AdaptiveCodingProblemClient {
+  id: string;
+  difficulty: "easy" | "medium" | "hard";
+  prompt: string;
+  starterCode: string;
+  visibleTests: { id: string; stdin: string; expectedOutput: string }[];
+  hiddenTestCount: number;
+}
+
+export interface AdaptiveCodingClientConfig {
+  intro: string;
+  rounds: number;
+  language: { id: string; label: string; monacoLanguage: string };
+  firstProblem: AdaptiveCodingProblemClient | null;
+}
+
+export interface RubricResponseClientConfig {
+  level: 1 | 2 | 3 | 4 | 5;
+  prompt: string;
+  contextMaterial?: string;
+  responseType: "text" | "code";
 }

@@ -5,6 +5,7 @@ export interface AiNarrative {
   narrative: string;
   strengths: string[];
   growthAreas: string[];
+  seniorityEstimate: string;
   aiGenerated: boolean;
 }
 
@@ -25,8 +26,13 @@ const REPORT_SCHEMA = {
       items: { type: "string" },
       description: "1-3 short, specific growth areas observed across the stations.",
     },
+    seniorityEstimate: {
+      type: "string",
+      description:
+        'One short sentence giving a role/level estimate grounded in the results, e.g. "Performs at mid-level backend engineer, with gaps in system design reasoning." If the track doesn\'t map cleanly to a seniority ladder (e.g. a general soft-skills track), give a proportionate readiness statement instead.',
+    },
   },
-  required: ["narrative", "strengths", "growthAreas"],
+  required: ["narrative", "strengths", "growthAreas", "seniorityEstimate"],
   additionalProperties: false,
 } as const;
 
@@ -37,6 +43,7 @@ function fallbackNarrative(aggregate: AggregateScores): AiNarrative {
     narrative: `Rule-based summary (AI narrative unavailable): overall score ${aggregate.overall}/100, with technical skill ${aggregate.technicalSkill}, problem solving ${aggregate.problemSolving}, and soft skills ${aggregate.softSkills}.`,
     strengths: strong.length ? strong : ["No standout stations identified."],
     growthAreas: weak.length ? weak : ["No significant weak areas identified."],
+    seniorityEstimate: "Seniority estimate unavailable without AI grading.",
     aiGenerated: false,
   };
 }
@@ -74,7 +81,7 @@ Rule-based sub-scores (0-100): technical skill ${aggregate.technicalSkill}, prob
 Per-station results:
 ${stationSummary}
 
-Write a short, concrete, hiring-manager-facing narrative explaining the candidate's performance, plus specific strengths and growth areas grounded in the station results above. Do not invent details not supported by the data.`,
+Write a short, concrete, hiring-manager-facing narrative explaining the candidate's performance, specific strengths and growth areas, and a one-sentence seniority/readiness estimate — all grounded in the station results above. Do not invent details not supported by the data.`,
         },
       ],
     });
@@ -86,6 +93,7 @@ Write a short, concrete, hiring-manager-facing narrative explaining the candidat
       narrative: string;
       strengths: string[];
       growthAreas: string[];
+      seniorityEstimate: string;
     };
 
     return { ...parsed, aiGenerated: true };

@@ -8,7 +8,9 @@ export type StationType =
   | "code-ide"
   | "sql-sandbox"
   | "branching-scenario"
-  | "softskill-game";
+  | "softskill-game"
+  | "adaptive-coding"
+  | "rubric-response";
 
 export interface McqQuestion {
   id: string;
@@ -142,6 +144,43 @@ export interface SoftSkillGameConfig {
   items: SoftSkillItem[];
 }
 
+// --- Reusable leveling engine: adaptive coding bank (L1-2 software engineering) ---
+export interface AdaptiveCodingProblem {
+  id: string;
+  difficulty: SoftSkillDifficulty;
+  prompt: string;
+  starterCode: string;
+  testCases: CodeTestCase[];
+}
+export interface AdaptiveCodingConfig {
+  intro: string;
+  rounds: number;
+  language: { id: string; label: string; judge0LanguageId: number; monacoLanguage: string };
+  problems: AdaptiveCodingProblem[];
+}
+
+// --- Reusable leveling engine: rubric-graded free response (L3-5, any field) ---
+export interface RubricDimension {
+  key: string;
+  label: string;
+  weight: number;
+  mapsTo: "technicalSkill" | "problemSolving" | "softSkills";
+  anchors: { low: string; mid: string; high: string };
+}
+export interface SeededIssue {
+  id: string;
+  description: string; // answer key — stripped before reaching the client
+}
+export interface RubricResponseConfig {
+  level: 1 | 2 | 3 | 4 | 5;
+  skillTag: string;
+  prompt: string;
+  contextMaterial?: string;
+  responseType: "text" | "code";
+  seededIssues?: SeededIssue[];
+  rubric: RubricDimension[];
+}
+
 export type StationConfig =
   | { type: "mcq"; data: McqConfig }
   | { type: "sequence"; data: SequenceConfig }
@@ -152,7 +191,9 @@ export type StationConfig =
   | { type: "code-ide"; data: CodeIdeConfig }
   | { type: "sql-sandbox"; data: SqlSandboxConfig }
   | { type: "branching-scenario"; data: BranchingScenarioConfig }
-  | { type: "softskill-game"; data: SoftSkillGameConfig };
+  | { type: "softskill-game"; data: SoftSkillGameConfig }
+  | { type: "adaptive-coding"; data: AdaptiveCodingConfig }
+  | { type: "rubric-response"; data: RubricResponseConfig };
 
 export interface StationDefinition {
   order: number;

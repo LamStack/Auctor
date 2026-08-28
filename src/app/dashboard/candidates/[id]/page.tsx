@@ -42,8 +42,12 @@ export default async function CandidateReportPage({ params }: { params: { id: st
           <p className="font-display mt-1 text-5xl font-bold text-brand-300">{session.report.overall}<span className="text-2xl text-muted">/100</span></p>
           {session.report.rank && session.report.rankTotal && (
             <Badge tone="accent" className="mt-2">
-              Rank #{session.report.rank} of {session.report.rankTotal} for this track
+              Rank #{session.report.rank} of {session.report.rankTotal}
+              {session.invite.batchId ? " in this batch" : " for this track"}
             </Badge>
+          )}
+          {session.report.seniorityEstimate && (
+            <p className="mt-3 text-sm font-medium text-ink">{session.report.seniorityEstimate}</p>
           )}
           <div className="mt-4">
             <SkillRadarChart

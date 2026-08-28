@@ -8,7 +8,7 @@ export async function completeSessionAndScore(sessionId: string) {
     where: { id: sessionId },
     include: {
       results: { include: { station: true } },
-      invite: { include: { track: true, company: { include: { credits: true } } } },
+      invite: { include: { track: true, company: true } },
     },
   });
 
@@ -30,10 +30,13 @@ export async function completeSessionAndScore(sessionId: string) {
     aggregate,
   });
 
-  const priorScores = await db.skillReport.findMany({
-    where: { session: { invite: { companyId: session.invite.companyId, trackId: session.invite.trackId } } },
-    select: { overall: true },
-  });
+  // Rank against the batch this invite belongs to, if any (a bulk-invite
+  // cohort), else fall back to the company+track scope used for one-off
+  // invites — same "how many scored higher" formula either way.
+  const rankScope = session.invite.batchId
+    ? { session: { invite: { batchId: session.invite.batchId } } }
+    : { session: { invite: { companyId: session.invite.companyId, trackId: session.invite.trackId } } };
+  const priorScores = await db.skillReport.findMany({ where: rankScope, select: { overall: true } });
   const rankTotal = priorScores.length + 1;
   const rank = priorScores.filter((p) => p.overall > aggregate.overall).length + 1;
 
@@ -46,6 +49,7 @@ export async function completeSessionAndScore(sessionId: string) {
       overall: aggregate.overall,
       rank,
       rankTotal,
+      seniorityEstimate: ai.seniorityEstimate,
       strengths: JSON.stringify(ai.strengths),
       growthAreas: JSON.stringify(ai.growthAreas),
       narrative: ai.narrative,
@@ -57,12 +61,9 @@ export async function completeSessionAndScore(sessionId: string) {
   await db.session.update({ where: { id: session.id }, data: { completedAt: new Date() } });
   await db.invite.update({ where: { id: session.invite.id }, data: { status: "completed" } });
 
-  if (session.invite.company.credits) {
-    await db.creditBalance.update({
-      where: { companyId: session.invite.companyId },
-      data: { assessmentsRemaining: { decrement: 1 } },
-    });
-  }
+  // Credits are now consumed when the invite is sent (see the invite-creation
+  // routes), not on completion — an unopened invite still cost a credit, per
+  // the licensing model, so nothing to decrement here anymore.
 
   if (session.invite.candidateEmail) {
     await sendResultsEmail({

@@ -18,6 +18,7 @@ model Company {
   credits  CreditBalance?
   orders   PackageOrder[]
   invites  Invite[]
+  batches  InviteBatch[]
 }
 
 model CreditBalance {
@@ -40,14 +41,26 @@ model PackageOrder {
 }
 
 model Track {
-  id          String    @id @default(cuid())
-  slug        String    @unique
+  id          String        @id @default(cuid())
+  slug        String        @unique
   title       String
   description String
   theme       String
-  category    String    @default("game-world")
+  category    String        @default("game-world")
   stations    Station[]
   invites     Invite[]
+  batches     InviteBatch[]
+}
+
+model InviteBatch {
+  id        String   @id @default(cuid())
+  companyId String
+  company   Company  @relation(fields: [companyId], references: [id])
+  trackId   String
+  track     Track    @relation(fields: [trackId], references: [id])
+  roleLabel String
+  createdAt DateTime @default(now())
+  invites   Invite[]
 }
 
 model Station {
@@ -76,6 +89,8 @@ model Invite {
   status         String    @default("pending")
   createdAt      DateTime  @default(now())
   session        Session?
+  batchId        String?
+  batch          InviteBatch? @relation(fields: [batchId], references: [id])
 }
 
 model Session {
@@ -114,6 +129,7 @@ model SkillReport {
   overall         Int
   rank            Int?
   rankTotal       Int?
+  seniorityEstimate String?
   strengths       String
   growthAreas     String
   narrative       String

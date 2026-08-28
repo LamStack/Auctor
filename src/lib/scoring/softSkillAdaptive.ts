@@ -1,34 +1,22 @@
-import { SoftSkillDifficulty, SoftSkillGameConfig, SoftSkillItem } from "@/lib/stationTypes";
+import { SoftSkillGameConfig, SoftSkillItem } from "@/lib/stationTypes";
+import { pickNextAdaptiveItem } from "@/lib/scoring/adaptiveBank";
 
-const ORDER: SoftSkillDifficulty[] = ["easy", "medium", "hard"];
-
-// Deterministic "staircase" difficulty ramp: a strong answer nudges the next
-// item harder, a weak one nudges it easier. Scores never leave the server —
-// the client only ever sees which item/choice was picked, not its value.
+// Deterministic "staircase" difficulty ramp built on the generic adaptive
+// bank engine (src/lib/scoring/adaptiveBank.ts) — this file just supplies
+// the soft-skill-specific "was that a good answer?" signal (a choice score
+// threshold). Scores never leave the server — the client only ever sees
+// which item/choice was picked, not its value.
 export function pickNextSoftSkillItem(
   config: SoftSkillGameConfig,
   path: { itemId: string; choiceId: string }[]
 ): SoftSkillItem | null {
-  if (path.length >= config.rounds) return null;
+  const adaptivePath = path.map((step) => {
+    const item = config.items.find((i) => i.id === step.itemId);
+    const choice = item?.choices.find((c) => c.id === step.choiceId);
+    return { itemId: step.itemId, wasGood: (choice?.score ?? 50) >= 60 };
+  });
 
-  let targetDifficulty: SoftSkillDifficulty = "medium";
-
-  if (path.length > 0) {
-    const last = path[path.length - 1];
-    const item = config.items.find((i) => i.id === last.itemId);
-    const choice = item?.choices.find((c) => c.id === last.choiceId);
-    const lastDifficulty = item?.difficulty ?? "medium";
-    const goodAnswer = (choice?.score ?? 50) >= 60;
-    const idx = ORDER.indexOf(lastDifficulty);
-    targetDifficulty = goodAnswer ? ORDER[Math.min(idx + 1, ORDER.length - 1)] : ORDER[Math.max(idx - 1, 0)];
-  }
-
-  const usedIds = new Set(path.map((p) => p.itemId));
-  const primary = config.items.filter((i) => i.difficulty === targetDifficulty && !usedIds.has(i.id));
-  const candidates = primary.length > 0 ? primary : config.items.filter((i) => !usedIds.has(i.id));
-
-  if (candidates.length === 0) return null;
-  return candidates[Math.floor(Math.random() * candidates.length)];
+  return pickNextAdaptiveItem(config.items, adaptivePath, config.rounds);
 }
 
 export function sanitizeSoftSkillItem(item: SoftSkillItem) {

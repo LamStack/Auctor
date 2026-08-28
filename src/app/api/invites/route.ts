@@ -3,6 +3,7 @@ import crypto from "crypto";
 import { z } from "zod";
 import { db } from "@/lib/db";
 import { getSessionCompanyId } from "@/lib/auth";
+import { InsufficientCreditsError, reserveCredits } from "@/lib/credits";
 
 const schema = z.object({
   trackId: z.string(),
@@ -48,6 +49,15 @@ export async function POST(request: Request) {
 
   const track = await db.track.findUnique({ where: { id: body.data.trackId } });
   if (!track) return NextResponse.json({ error: "Track not found" }, { status: 404 });
+
+  try {
+    await reserveCredits(companyId, 1);
+  } catch (err) {
+    if (err instanceof InsufficientCreditsError) {
+      return NextResponse.json({ error: err.message }, { status: 402 });
+    }
+    throw err;
+  }
 
   const token = crypto.randomBytes(12).toString("base64url");
 

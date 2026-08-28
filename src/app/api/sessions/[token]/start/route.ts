@@ -28,13 +28,15 @@ export async function POST(_request: Request, { params }: { params: { token: str
     roleLabel: invite.roleLabel,
     currentStationIndex: session.currentStationIndex,
     completed: Boolean(session.completedAt),
-    stations: invite.track.stations.map((s) => ({
-      id: s.id,
-      order: s.order,
-      type: s.type,
-      title: s.title,
-      answered: answeredStationIds.has(s.id),
-      config: sanitizeStationConfig(s.type as StationType, JSON.parse(s.config)),
-    })),
+    stations: await Promise.all(
+      invite.track.stations.map(async (s) => ({
+        id: s.id,
+        order: s.order,
+        type: s.type,
+        title: s.title,
+        answered: answeredStationIds.has(s.id),
+        config: await sanitizeStationConfig(s.type as StationType, JSON.parse(s.config)),
+      }))
+    ),
   });
 }

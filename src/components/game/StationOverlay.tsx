@@ -13,13 +13,15 @@ import { BranchingScenarioStation } from "@/components/game/stations/BranchingSc
 import { SoftSkillGameStation } from "@/components/game/stations/SoftSkillGameStation";
 import { SqlSandboxStation } from "@/components/game/stations/SqlSandboxStation";
 import { CodeIdeStation } from "@/components/game/stations/CodeIdeStation";
+import { AdaptiveCodingStation } from "@/components/game/stations/AdaptiveCodingStation";
+import { RubricResponseStation } from "@/components/game/stations/RubricResponseStation";
 
 export interface StationAnswerProps {
   onAnswer: (rawAnswer: unknown, reasoningText?: string) => void;
   submitting: boolean;
 }
 
-const WIDE_STATION_TYPES = new Set(["code-ide", "sql-sandbox"]);
+const WIDE_STATION_TYPES = new Set(["code-ide", "sql-sandbox", "adaptive-coding", "rubric-response"]);
 
 export function StationOverlay({
   token,
@@ -109,6 +111,18 @@ export function StationOverlay({
             onAnswer={handleAnswer}
             submitting={submitting}
           />
+        )}
+        {station.type === "adaptive-coding" && (
+          <AdaptiveCodingStation
+            token={token}
+            stationId={station.id}
+            config={station.config}
+            onAnswer={handleAnswer}
+            submitting={submitting}
+          />
+        )}
+        {station.type === "rubric-response" && (
+          <RubricResponseStation config={station.config} onAnswer={handleAnswer} submitting={submitting} />
         )}
       </motion.div>
     </motion.div>
