@@ -100,7 +100,7 @@ export function CodeIdeStation({
         <button
           type="button"
           onClick={() => setChatOpen((o) => !o)}
-          className="rounded-full border border-line px-3 py-1.5 text-xs font-semibold text-ink hover:bg-white/5"
+          className="rounded-full border border-line px-3 py-1.5 text-xs font-semibold text-ink hover:bg-ink/5"
         >
           {chatOpen ? "Hide" : "Show"} AI helper
         </button>
@@ -132,7 +132,7 @@ export function CodeIdeStation({
           {results && (
             <div className="max-h-40 overflow-y-auto rounded-lg border border-line bg-paper p-3 font-mono text-xs">
               {results.map((r, i) => (
-                <div key={r.id} className={`mb-2 border-b border-line/50 pb-2 ${r.passed ? "text-mint-300" : "text-danger"}`}>
+                <div key={r.id} className={`mb-2 border-b border-line/50 pb-2 ${r.passed ? "text-mint-600 dark:text-mint-300" : "text-danger"}`}>
                   <p className="font-bold">
                     Test {i + 1}: {r.passed ? "PASSED" : "FAILED"}
                   </p>
@@ -156,7 +156,7 @@ export function CodeIdeStation({
                 <p className="text-xs text-muted">Ask for help with syntax, a stuck point, or a bug.</p>
               )}
               {chatMessages.map((m, i) => (
-                <div key={i} className={`mb-2 text-xs ${m.role === "user" ? "text-brand-300" : "text-ink"}`}>
+                <div key={i} className={`mb-2 text-xs ${m.role === "user" ? "text-brand-700 dark:text-brand-300" : "text-ink"}`}>
                   <span className="font-bold">{m.role === "user" ? "You: " : "AI: "}</span>
                   {m.content}
                 </div>
@@ -169,13 +169,13 @@ export function CodeIdeStation({
                 onChange={(e) => setChatInput(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && sendChat()}
                 placeholder="Ask a question..."
-                className="min-w-0 flex-1 rounded-lg bg-white/5 px-2 py-1.5 text-xs text-ink outline-none"
+                className="min-w-0 flex-1 rounded-lg bg-ink/5 px-2 py-1.5 text-xs text-ink outline-none"
               />
               <button
                 type="button"
                 onClick={sendChat}
                 disabled={chatSending}
-                className="rounded-lg bg-brand-500 px-3 py-1.5 text-xs font-bold text-paper"
+                className="rounded-lg bg-brand-500 px-3 py-1.5 text-xs font-bold text-night"
               >
                 Send
               </button>

@@ -51,7 +51,7 @@ export default async function CandidatesPage() {
                 <tr key={c.sessionId} className="hover:bg-brand-500/10">
                   <td className="px-6 py-4 font-mono text-xs text-muted">{c.candidateId}</td>
                   <td className="px-6 py-4">
-                    <Link href={`/dashboard/candidates/${c.sessionId}`} className="font-semibold text-ink hover:text-brand-300">
+                    <Link href={`/dashboard/candidates/${c.sessionId}`} className="font-semibold text-ink hover:text-brand-700 dark:hover:text-brand-300">
                       {i === 0 && <span className="mr-1">🏆</span>}
                       {c.name}
                     </Link>

@@ -2,6 +2,30 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --color-ink: 15 18 53;
+  --color-muted: 88 94 140;
+  --color-paper: 245 247 255;
+  --color-panel: 255 255 255;
+  --color-line: 221 226 243;
+  --color-danger: 214 41 79;
+  --shadow-soft: 0 24px 70px rgba(15, 18, 53, 0.12);
+  --shadow-card: 0 8px 24px rgba(15, 18, 53, 0.08);
+  color-scheme: light;
+}
+
+.dark {
+  --color-ink: 234 240 255;
+  --color-muted: 141 147 199;
+  --color-paper: 7 8 33;
+  --color-panel: 16 19 63;
+  --color-line: 36 42 99;
+  --color-danger: 255 92 124;
+  --shadow-soft: 0 24px 70px rgba(0, 0, 0, 0.45);
+  --shadow-card: 0 8px 24px rgba(0, 0, 0, 0.3);
+  color-scheme: dark;
+}
+
 html {
   scroll-behavior: smooth;
 }

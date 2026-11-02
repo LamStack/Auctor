@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { Card } from "@/components/ui/Card";
+import { ThemeToggle } from "@/components/theme/ThemeToggle";
 import { Input, Label } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 
@@ -36,7 +37,8 @@ export default function SignupPage() {
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-brand-radial px-6">
+    <main className="relative flex min-h-screen items-center justify-center bg-brand-radial px-6">
+      <ThemeToggle className="absolute right-6 top-6" />
       <Card className="w-full max-w-md">
         <div className="mb-6 flex flex-col items-center gap-2 text-center">
           <Image src="/Auctorlogo-transparent.png" alt="AUCTOR" width={44} height={44} className="rounded-lg" />
@@ -70,7 +72,7 @@ export default function SignupPage() {
         </form>
         <p className="mt-6 text-center text-sm text-muted">
           Already have an account?{" "}
-          <Link href="/login" className="font-semibold text-brand-300">
+          <Link href="/login" className="font-semibold text-brand-700 dark:text-brand-300">
             Sign in
           </Link>
         </p>

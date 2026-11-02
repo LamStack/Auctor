@@ -63,7 +63,7 @@ export function StationOverlay({
           <h2 className="font-display text-lg font-bold text-ink">{station.title}</h2>
           <button
             onClick={onClose}
-            className="rounded-full px-2 py-1 text-sm font-bold text-muted hover:bg-white/10"
+            className="rounded-full px-2 py-1 text-sm font-bold text-muted hover:bg-ink/10"
             aria-label="Close"
           >
             ✕

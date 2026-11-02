@@ -23,13 +23,13 @@ export default async function PlayDonePage({ params }: { params: { token: string
         </p>
         {rank && rankTotal && (
           <div className="mt-5 rounded-lg border border-accent-400/30 bg-accent-500/10 p-4">
-            <p className="font-display text-2xl font-bold text-accent-400">
+            <p className="font-display text-2xl font-bold text-accent-700 dark:text-accent-400">
               #{rank} <span className="text-sm font-normal text-muted">of {rankTotal}</span>
             </p>
             <p className="text-xs text-muted">Your rank among candidates on this track</p>
           </div>
         )}
-        <p className="mt-6 text-xs font-semibold uppercase tracking-wide text-accent-400">
+        <p className="mt-6 text-xs font-semibold uppercase tracking-wide text-accent-700 dark:text-accent-400">
           Bahrain&rsquo;s first gamified assessments platform
         </p>
       </div>

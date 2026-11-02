@@ -2,14 +2,16 @@ import type { Config } from "tailwindcss";
 
 const config: Config = {
   content: ["./src/**/*.{ts,tsx}"],
+  darkMode: "class",
   theme: {
     extend: {
       colors: {
-        ink: "#EAF0FF",
-        muted: "#8D93C7",
-        paper: "#070821",
-        panel: "#10133F",
-        line: "#242A63",
+        ink: "rgb(var(--color-ink) / <alpha-value>)",
+        muted: "rgb(var(--color-muted) / <alpha-value>)",
+        paper: "rgb(var(--color-paper) / <alpha-value>)",
+        panel: "rgb(var(--color-panel) / <alpha-value>)",
+        line: "rgb(var(--color-line) / <alpha-value>)",
+        night: "#070821",
         brand: {
           50: "#EFFDFF",
           100: "#D6FAFF",
@@ -40,15 +42,15 @@ const config: Config = {
           500: "#1FBE84",
           600: "#149C6B",
         },
-        danger: "#FF5C7C",
+        danger: "rgb(var(--color-danger) / <alpha-value>)",
       },
       fontFamily: {
         sans: ["var(--font-inter)", "system-ui", "sans-serif"],
         display: ["var(--font-poppins)", "system-ui", "sans-serif"],
       },
       boxShadow: {
-        soft: "0 24px 70px rgba(0, 0, 0, 0.45)",
-        card: "0 8px 24px rgba(0, 0, 0, 0.3)",
+        soft: "var(--shadow-soft)",
+        card: "var(--shadow-card)",
         glow: "0 0 0 4px rgba(15, 190, 222, 0.22)",
       },
       backgroundImage: {

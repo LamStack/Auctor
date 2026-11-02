@@ -41,7 +41,7 @@ export default async function BatchesPage() {
         {rows.length === 0 ? (
           <p className="p-6 text-sm text-muted">
             No batches yet. Use &ldquo;Bulk invite&rdquo; from the{" "}
-            <Link href="/dashboard/tracks" className="text-brand-300 hover:underline">
+            <Link href="/dashboard/tracks" className="text-brand-700 dark:text-brand-300 hover:underline">
               Assessment tracks
             </Link>{" "}
             page to invite many candidates at once.
@@ -61,7 +61,7 @@ export default async function BatchesPage() {
               {rows.map((b) => (
                 <tr key={b.id} className="hover:bg-brand-500/10">
                   <td className="px-6 py-4">
-                    <Link href={`/dashboard/batches/${b.id}`} className="font-semibold text-ink hover:text-brand-300">
+                    <Link href={`/dashboard/batches/${b.id}`} className="font-semibold text-ink hover:text-brand-700 dark:hover:text-brand-300">
                       {b.roleLabel}
                     </Link>
                   </td>

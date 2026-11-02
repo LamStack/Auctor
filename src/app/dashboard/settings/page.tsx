@@ -53,10 +53,10 @@ export default function SettingsPage() {
       <Card className="max-w-2xl">
         <h2 className="font-display mb-3 text-lg font-bold text-ink">Results email template</h2>
         <p className="mb-3 text-xs text-muted">
-          Available placeholders: <code className="text-brand-300">{"{{name}}"}</code>{" "}
-          <code className="text-brand-300">{"{{role}}"}</code>{" "}
-          <code className="text-brand-300">{"{{company}}"}</code>{" "}
-          <code className="text-brand-300">{"{{score}}"}</code>
+          Available placeholders: <code className="text-brand-700 dark:text-brand-300">{"{{name}}"}</code>{" "}
+          <code className="text-brand-700 dark:text-brand-300">{"{{role}}"}</code>{" "}
+          <code className="text-brand-700 dark:text-brand-300">{"{{company}}"}</code>{" "}
+          <code className="text-brand-700 dark:text-brand-300">{"{{score}}"}</code>
         </p>
         {loading ? (
           <p className="text-sm text-muted">Loading&hellip;</p>

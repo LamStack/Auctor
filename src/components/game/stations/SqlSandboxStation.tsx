@@ -73,7 +73,7 @@ export function SqlSandboxStation({
             <div className="flex flex-col gap-2">
               {config.schemaSummary.map((t) => (
                 <div key={t.table} className="rounded-lg border border-line bg-paper p-3">
-                  <p className="font-mono text-xs font-bold text-brand-300">{t.table}</p>
+                  <p className="font-mono text-xs font-bold text-brand-700 dark:text-brand-300">{t.table}</p>
                   <p className="mt-1 font-mono text-[11px] text-muted">{t.columns.join(", ")}</p>
                 </div>
               ))}
@@ -85,7 +85,7 @@ export function SqlSandboxStation({
               {config.tasks.map((task, i) => (
                 <div key={task.id} className="rounded-lg border border-line bg-paper p-3 text-xs text-ink">
                   <p>
-                    <span className="font-bold text-accent-400">{i + 1}.</span> {task.prompt}
+                    <span className="font-bold text-accent-700 dark:text-accent-400">{i + 1}.</span> {task.prompt}
                   </p>
                   {task.hint &&
                     (revealedHints.has(task.id) ? (
@@ -94,7 +94,7 @@ export function SqlSandboxStation({
                       <button
                         type="button"
                         onClick={() => setRevealedHints((s) => new Set(s).add(task.id))}
-                        className="mt-1 text-brand-300 underline"
+                        className="mt-1 text-brand-700 dark:text-brand-300 underline"
                       >
                         Show hint
                       </button>

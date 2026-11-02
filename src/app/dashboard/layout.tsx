@@ -4,6 +4,7 @@ import Link from "next/link";
 import { getCurrentCompany } from "@/lib/auth";
 import { Badge } from "@/components/ui/Badge";
 import { LogoutButton } from "@/components/dashboard/LogoutButton";
+import { ThemeToggle } from "@/components/theme/ThemeToggle";
 
 const navItems = [
   { href: "/dashboard", label: "Overview" },
@@ -29,6 +30,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
           <div className="flex items-center gap-4">
             <Badge tone="accent">{company.credits?.assessmentsRemaining ?? 0} assessments left</Badge>
             <span className="hidden text-sm font-medium text-muted sm:inline">{company.name}</span>
+            <ThemeToggle />
             <LogoutButton />
           </div>
         </div>
@@ -41,7 +43,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
               <Link
                 key={item.href}
                 href={item.href}
-                className="rounded-lg px-4 py-2.5 text-sm font-semibold text-ink hover:bg-brand-500/10 hover:text-brand-300"
+                className="rounded-lg px-4 py-2.5 text-sm font-semibold text-ink hover:bg-brand-500/10 hover:text-brand-700 dark:hover:text-brand-300"
               >
                 {item.label}
               </Link>

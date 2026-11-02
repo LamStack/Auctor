@@ -2,6 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { buttonClasses } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
+import { ThemeToggle } from "@/components/theme/ThemeToggle";
 
 export default function HomePage() {
   return (
@@ -12,7 +13,8 @@ export default function HomePage() {
           <span className="font-display text-lg font-bold text-ink">AUCTOR</span>
         </div>
         <nav className="flex items-center gap-3">
-          <Link href="/login" className="text-sm font-semibold text-ink hover:text-brand-300">
+          <ThemeToggle />
+          <Link href="/login" className="text-sm font-semibold text-ink hover:text-brand-700 dark:hover:text-brand-300">
             Sign in
           </Link>
           <Link href="/signup" className={buttonClasses("primary", "text-sm")}>

@@ -32,7 +32,7 @@ export default async function BatchDetailPage({ params }: { params: { id: string
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <Link href="/dashboard/batches" className="text-sm text-muted hover:text-brand-300">
+        <Link href="/dashboard/batches" className="text-sm text-muted hover:text-brand-700 dark:hover:text-brand-300">
           &larr; All batches
         </Link>
         <h1 className="font-display mt-1 text-2xl font-bold text-ink">{batch.roleLabel}</h1>
@@ -61,7 +61,7 @@ export default async function BatchDetailPage({ params }: { params: { id: string
                   <td className="px-6 py-4 font-mono text-xs text-muted">#{i + 1}</td>
                   <td className="px-6 py-4 font-mono text-xs text-muted">{c.candidateId}</td>
                   <td className="px-6 py-4">
-                    <Link href={`/dashboard/candidates/${c.sessionId}`} className="font-semibold text-ink hover:text-brand-300">
+                    <Link href={`/dashboard/candidates/${c.sessionId}`} className="font-semibold text-ink hover:text-brand-700 dark:hover:text-brand-300">
                       {i === 0 && <span className="mr-1">🏆</span>}
                       {c.name}
                     </Link>

@@ -208,7 +208,7 @@ export default function TracksPage() {
               {generatedLink && (
                 <div className="mt-5 rounded-lg border border-mint-400/40 bg-mint-500/10 p-4">
                   <p className="mb-2 text-sm font-semibold text-ink">Send this link to your candidate:</p>
-                  <code className="block break-all rounded bg-paper px-3 py-2 text-xs text-mint-300">{generatedLink}</code>
+                  <code className="block break-all rounded bg-paper px-3 py-2 text-xs text-mint-600 dark:text-mint-300">{generatedLink}</code>
                 </div>
               )}
             </>
@@ -232,7 +232,7 @@ export default function TracksPage() {
                     <button
                       type="button"
                       onClick={() => fileInputRef.current?.click()}
-                      className="text-xs font-semibold text-brand-300 hover:underline"
+                      className="text-xs font-semibold text-brand-700 dark:text-brand-300 hover:underline"
                     >
                       Upload CSV
                     </button>
